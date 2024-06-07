@@ -526,6 +526,9 @@ declare namespace WAWebJS {
      export class RemoteAuth extends AuthStrategy {
         public clientId?: string;
         public dataPath?: string;
+        public storeRemoteSession(
+            options?: { emit: boolean },
+        ): Promise<void>;
         constructor(options?: {
             store: Store,
             clientId?: string,
