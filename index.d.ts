@@ -919,7 +919,43 @@ declare namespace WAWebJS {
         /** Selected list row ID */
         selectedRowId?: string,
         /** Returns message in a raw format */
-        rawData: object,
+        rawData: {
+            isNewMsg?: boolean;
+            recvFresh?: boolean;
+            caption?: string;
+            isDynamicReplyButtonsMsg?: boolean;
+            dynamicReplyButtons?: Array<{
+                $$unknownFieldCount: number;
+                buttonId: string;
+                buttonText: {
+                    $$unknownFieldCount: number;
+                    displayText: string;
+                };
+                type: number;
+            }>;
+            list?: {
+                $$unknownFieldCount: number;
+                title: string;
+                description: string;
+                buttonText: string;
+                listType: number;
+                sections: Array<{
+                    $$unknownFieldCount: number;
+                    rows: Array<{
+                        $$unknownFieldCount: number;
+                        title: string;
+                        rowId: string;
+                    }>;
+                }>;
+            };
+            mimeType?: string;
+            directPath?: string;
+            filehash?: string;
+            encFilehash?: string;
+            width?: number;
+            height?: number;
+            scanLengths?: [number, number, number, number];
+        };
         pollName: string,
         /** Avaiaible poll voting options */
         pollOptions: string[],
