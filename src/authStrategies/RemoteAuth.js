@@ -22,9 +22,10 @@ const BaseAuthStrategy = require('./BaseAuthStrategy');
  * @param {string} options.clientId - Client id to distinguish instances if you are using multiple, otherwise keep null if you are using only one instance
  * @param {string} options.dataPath - Change the default path for saving session files, default is: "./.wwebjs_auth/" 
  * @param {number} options.backupSyncIntervalMs - Sets the time interval for periodic session backups. Accepts values starting from 60000ms {1 minute}
+ * @param {boolean} options.forceFirstSync - Forces the first sync to be done 60s after the session is authenticated (and then starts backup interval)
  */
 class RemoteAuth extends BaseAuthStrategy {
-    constructor({ clientId, dataPath, store, backupSyncIntervalMs } = {}) {
+    constructor({ store, backupSyncIntervalMs, clientId, dataPath, forceFirstSync } = {}) {
         if (!fs && !AdmZip && !archiver) throw new Error('Optional Dependencies [fs-extra, admZip, archiver] are required to use RemoteAuth. Make sure to run npm install correctly and remove the --no-optional flag');
         super();
 
@@ -37,6 +38,7 @@ class RemoteAuth extends BaseAuthStrategy {
         }
         if (!store) throw new Error('Remote database store is required.');
 
+        this.forceFirstSync = forceFirstSync;
         this.store = store;
         this.clientId = clientId;
         this.backupSyncIntervalMs = backupSyncIntervalMs;
@@ -88,7 +90,7 @@ class RemoteAuth extends BaseAuthStrategy {
 
     async afterAuthReady() {
         const sessionExists = await this.store.sessionExists({ session: this.sessionName });
-        if (!sessionExists) {
+        if (!sessionExists || this.forceFirstSync) {
             await this.delay(60000); /* Initial delay sync required for session to be stable enough to recover */
             await this.storeRemoteSession({ emit: true });
         }

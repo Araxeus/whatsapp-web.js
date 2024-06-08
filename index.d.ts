@@ -531,9 +531,10 @@ declare namespace WAWebJS {
         ): Promise<void>;
         constructor(options?: {
             store: Store,
+            backupSyncIntervalMs: number
             clientId?: string,
             dataPath?: string,
-            backupSyncIntervalMs: number
+            forceFirstSync?: boolean
         })
     }
 
