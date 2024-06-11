@@ -948,6 +948,8 @@ declare namespace WAWebJS {
                     }>;
                 }>;
             };
+            type: string;
+            subtype?: string;
             mimeType?: string;
             directPath?: string;
             filehash?: string;
