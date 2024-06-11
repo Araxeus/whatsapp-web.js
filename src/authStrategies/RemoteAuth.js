@@ -73,6 +73,7 @@ class RemoteAuth extends BaseAuthStrategy {
 
     async destroy() {
         clearInterval(this.backupSync);
+        this.isDestroyed = true;
     }
 
     async disconnect() {
@@ -89,13 +90,18 @@ class RemoteAuth extends BaseAuthStrategy {
     }
 
     async afterAuthReady() {
+        if (this.startedWaitingForFirstSync) return;
         const sessionExists = await this.store.sessionExists({ session: this.sessionName });
         if (!sessionExists || this.forceFirstSync) {
+            this.startedWaitingForFirstSync = true;
             await this.delay(60000); /* Initial delay sync required for session to be stable enough to recover */
+            if (this.isDestroyed) return;
             await this.storeRemoteSession({ emit: true });
         }
+        if (this.isDestroyed) return;
         var self = this;
         this.backupSync = setInterval(async function () {
+            if (self.isDestroyed) return;
             await self.storeRemoteSession({ emit: true });
         }, this.backupSyncIntervalMs);
     }
